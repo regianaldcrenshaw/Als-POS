@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        input[type="number"] {
+            width: 50px;
+            text-align: center;
+        }
+        #total {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #copyButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>POS System</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="items">
+            <script>
+                const items = [
+                    { name: "Potion", price: 10 },
+                    { name: "Sword", price: 50 },
+                    { name: "Shield", price: 100 },
+                    { name: "Helmet", price: 75 },
+                    { name: "Boots", price: 40 },
+                    { name: "Armor", price: 150 },
+                    { name: "Elixir", price: 25 },
+                    { name: "Staff", price: 120 },
+                    { name: "Bow", price: 60 },
+                    { name: "Arrow Bundle", price: 15 },
+                    { name: "Ring", price: 200 },
+                    { name: "Amulet", price: 180 },
+                    { name: "Gloves", price: 35 },
+                    { name: "Dagger", price: 45 },
+                    { name: "Shield Upgrade", price: 90 },
+                    { name: "Scroll", price: 20 },
+                    { name: "Lantern", price: 30 },
+                    { name: "Pickaxe", price: 50 },
+                    { name: "Rope", price: 25 },
+                    { name: "Map", price: 10 },
+                ];
+
+                items.forEach((item, index) => {
+                    document.write(`
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>$${item.price.toFixed(2)}</td>
+                            <td><input type="number" id="quantity-${index}" value="0" onchange="updateItemTotal(${index})"></td>
+                            <td id="total-${index}">$0.00</td>
+                        </tr>
+                    `);
+                });
+            </script>
+        </tbody>
+    </table>
+    <div id="total">Grand Total: $0.00</div>
+    <button id="copyButton" onclick="copyOrder()">Copy Order Info</button>
+    <textarea id="orderInfo" style="width: 90%; height: 100px; margin-top: 20px;" readonly></textarea>
+    <script>
+        const updateItemTotal = (index) => {
+            const quantity = parseInt(document.getElementById(`quantity-${index}`).value) || 0;
+            const price = items[index].price;
+            const total = price * quantity;
+            document.getElementById(`total-${index}`).innerText = `$${total.toFixed(2)}`;
+            updateGrandTotal();
+        };
+
+        const updateGrandTotal = () => {
+            let grandTotal = 0;
+            items.forEach((_, index) => {
+                const itemTotal = parseFloat(document.getElementById(`total-${index}`).innerText.replace('$', '')) || 0;
+                grandTotal += itemTotal;
+            });
+            document.getElementById('total').innerText = `Grand Total: $${grandTotal.toFixed(2)}`;
+        };
+
+        const copyOrder = () => {
+            let orderDetails = "Order Summary:\n";
+            let grandTotal = 0;
+            items.forEach((item, index) => {
+                const quantity = parseInt(document.getElementById(`quantity-${index}`).value) || 0;
+                if (quantity > 0) {
+                    const total = item.price * quantity;
+                    orderDetails += `${item.name}: $${item.price} x ${quantity} = $${total.toFixed(2)}\n`;
+                    grandTotal += total;
+                }
+            });
+            orderDetails += `\nGrand Total: $${grandTotal.toFixed(2)}`;
+            document.getElementById('orderInfo').value = orderDetails;
+            navigator.clipboard.writeText(orderDetails).then(() => {
+                alert("Order details copied to clipboard!");
+            });
+        };
+    </script>
+</body>
+</html>
